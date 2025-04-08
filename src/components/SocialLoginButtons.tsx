@@ -1,14 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Facebook, LogIn } from "lucide-react";
+import { Facebook, Github } from "lucide-react";
 
 interface SocialLoginButtonsProps {
   isLoading: boolean;
 }
 
 const SocialLoginButtons = ({ isLoading }: SocialLoginButtonsProps) => {
-  const { signInWithGoogle, signInWithFacebook } = useAuth();
+  const { signInWithGoogle, signInWithFacebook, signInWithGitHub } = useAuth();
 
   return (
     <div className="space-y-2">
@@ -22,7 +22,7 @@ const SocialLoginButtons = ({ isLoading }: SocialLoginButtonsProps) => {
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-2">
         <Button
           variant="outline"
           onClick={signInWithGoogle}
@@ -45,7 +45,6 @@ const SocialLoginButtons = ({ isLoading }: SocialLoginButtonsProps) => {
             <path d="M1 12c0-5 4-9 9-9s9 4 9 9-4 9-9 9h-9v-9Z" />
             <path d="M15 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
           </svg>
-          Google
         </Button>
         <Button
           variant="outline"
@@ -55,8 +54,21 @@ const SocialLoginButtons = ({ isLoading }: SocialLoginButtonsProps) => {
           className="flex items-center justify-center gap-2"
         >
           <Facebook className="h-4 w-4" />
-          Facebook
         </Button>
+        <Button
+          variant="outline"
+          onClick={signInWithGitHub}
+          disabled={isLoading}
+          type="button"
+          className="flex items-center justify-center gap-2"
+        >
+          <Github className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="text-center text-xs text-muted-foreground">Google</div>
+        <div className="text-center text-xs text-muted-foreground">Facebook</div>
+        <div className="text-center text-xs text-muted-foreground">GitHub</div>
       </div>
     </div>
   );

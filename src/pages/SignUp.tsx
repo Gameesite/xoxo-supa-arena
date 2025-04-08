@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserPlus } from 'lucide-react';
+import SocialLoginButtons from '@/components/SocialLoginButtons';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ const SignUp = () => {
             Enter your email and password to create your account
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -117,6 +118,8 @@ const SignUp = () => {
               )}
             </Button>
           </form>
+          
+          <SocialLoginButtons isLoading={isLoading || isSubmitting} />
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Ban, Trash2, Gift, Cpu, Medal } from 'lucide-react';
 
@@ -195,9 +194,15 @@ const AdminDashboard = () => {
 
       if (fetchError) throw fetchError;
 
-      const currentAmount = giftType === 'gold' ? userData.points || 0 : userData.gems || 0;
+      // Fixed: Proper type handling for userData
+      let currentAmount = 0;
+      if (giftType === 'gold' && 'points' in userData) {
+        currentAmount = userData.points || 0;
+      } else if (giftType === 'gems' && 'gems' in userData) {
+        currentAmount = userData.gems || 0;
+      }
+      
       const newAmount = currentAmount + giftAmount;
-
       const updateData = giftType === 'gold' ? { points: newAmount } : { gems: newAmount };
       
       const { error: updateError } = await supabase
@@ -559,7 +564,7 @@ const AdminDashboard = () => {
                   <Label htmlFor="deleteUser">Select User to Delete</Label>
                   <select 
                     id="deleteUser"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
                     value={selectedUserId}
                     onChange={(e) => setSelectedUserId(e.target.value)}
                   >

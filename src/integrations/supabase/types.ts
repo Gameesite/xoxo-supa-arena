@@ -11,25 +11,25 @@ export type Database = {
     Tables: {
       users: {
         Row: {
-          created_at: string | null
-          email: string | null
+          created_at: string
+          email: string
           id: string
-          level: number | null
-          username: string | null
+          level: number
+          username: string
         }
         Insert: {
-          created_at?: string | null
-          email?: string | null
+          created_at?: string
+          email: string
           id?: string
-          level?: number | null
-          username?: string | null
+          level?: number
+          username: string
         }
         Update: {
-          created_at?: string | null
-          email?: string | null
+          created_at?: string
+          email?: string
           id?: string
-          level?: number | null
-          username?: string | null
+          level?: number
+          username?: string
         }
         Relationships: []
       }

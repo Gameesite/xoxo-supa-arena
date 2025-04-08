@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Session, User } from '@supabase/supabase-js';
@@ -185,8 +186,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInAnonymously = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signInWithSSO({
-        provider: 'anonymous',
+      
+      // Create a random email and password for anonymous auth
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const email = `anonymous_${randomString}@example.com`;
+      const password = randomString + Math.random().toString(36).substring(2, 15);
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
       });
 
       if (error) throw error;

@@ -88,27 +88,29 @@ const TicTacToe = ({ onGameEnd }: GameProps) => {
 
           if (fetchError) throw fetchError;
 
-          const points = profile.points + (newWinner === 'X' ? 5 : 0);
-          const gamesPlayed = profile.games_played + 1;
-          const gamesWon = profile.games_won + (newWinner === 'X' ? 1 : 0);
-          let rank = 'Bronze';
-          
-          if (points >= 100) rank = 'Silver';
-          if (points >= 300) rank = 'Gold';
-          if (points >= 600) rank = 'Platinum';
-          if (points >= 1000) rank = 'Diamond';
+          if (profile) {
+            const points = (profile.points || 0) + (newWinner === 'X' ? 5 : 0);
+            const gamesPlayed = (profile.games_played || 0) + 1;
+            const gamesWon = (profile.games_won || 0) + (newWinner === 'X' ? 1 : 0);
+            let rank = 'Bronze';
+            
+            if (points >= 100) rank = 'Silver';
+            if (points >= 300) rank = 'Gold';
+            if (points >= 600) rank = 'Platinum';
+            if (points >= 1000) rank = 'Diamond';
 
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({
-              games_played: gamesPlayed,
-              games_won: gamesWon,
-              points: points,
-              rank: rank,
-            })
-            .eq('id', user.id);
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({
+                games_played: gamesPlayed,
+                games_won: gamesWon,
+                points: points,
+                rank: rank,
+              })
+              .eq('id', user.id);
 
-          if (updateError) throw updateError;
+            if (updateError) throw updateError;
+          }
 
           if (onGameEnd) onGameEnd(newWinner === 'X' ? 'win' : 'loss');
         } catch (error) {
@@ -144,15 +146,17 @@ const TicTacToe = ({ onGameEnd }: GameProps) => {
 
           if (fetchError) throw fetchError;
 
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({
-              games_played: profile.games_played + 1,
-              points: profile.points + 2, // 2 points for a draw
-            })
-            .eq('id', user.id);
+          if (profile) {
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({
+                games_played: (profile.games_played || 0) + 1,
+                points: (profile.points || 0) + 2, // 2 points for a draw
+              })
+              .eq('id', user.id);
 
-          if (updateError) throw updateError;
+            if (updateError) throw updateError;
+          }
           
           if (onGameEnd) onGameEnd('draw');
         } catch (error) {

@@ -74,6 +74,7 @@ const RedeemCode = () => {
         .insert({
           user_id: user.id,
           code_id: codeData.id,
+          redeemed_at: new Date().toISOString()
         });
 
       if (insertError) {
@@ -83,7 +84,7 @@ const RedeemCode = () => {
       // Get user's current profile data
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('points, gems')
+        .select('points, gems, vip, vip_type')
         .eq('id', user.id)
         .single();
 
@@ -92,30 +93,32 @@ const RedeemCode = () => {
       }
 
       // Apply the rewards based on code type
-      const updates: any = {};
+      const updates: Record<string, any> = {};
       let rewardDescription = '';
 
-      switch (codeData.type) {
-        case 'gold':
-          updates.points = (profileData.points || 0) + codeData.reward_amount;
-          rewardDescription = `${codeData.reward_amount} X Gold`;
-          break;
-        case 'jewels':
-          updates.gems = (profileData.gems || 0) + codeData.reward_amount;
-          rewardDescription = `${codeData.reward_amount} Red Gems`;
-          break;
-        case 'vipPass':
-          updates.vip = true;
-          updates.vip_type = codeData.vip_type;
-          rewardDescription = `VIP Pass (${codeData.vip_type})`;
-          break;
-        case 'allRewards':
-          updates.points = (profileData.points || 0) + codeData.reward_amount;
-          updates.gems = (profileData.gems || 0) + 200;
-          updates.vip = true;
-          updates.vip_type = 'gold';
-          rewardDescription = 'All Rewards (Gold, Gems & VIP Pass)';
-          break;
+      if (codeData && profileData) {
+        switch (codeData.type) {
+          case 'gold':
+            updates.points = (profileData.points || 0) + (codeData.reward_amount || 0);
+            rewardDescription = `${codeData.reward_amount} X Gold`;
+            break;
+          case 'jewels':
+            updates.gems = (profileData.gems || 0) + (codeData.reward_amount || 0);
+            rewardDescription = `${codeData.reward_amount} Red Gems`;
+            break;
+          case 'vipPass':
+            updates.vip = true;
+            updates.vip_type = codeData.vip_type;
+            rewardDescription = `VIP Pass (${codeData.vip_type})`;
+            break;
+          case 'allRewards':
+            updates.points = (profileData.points || 0) + (codeData.reward_amount || 0);
+            updates.gems = (profileData.gems || 0) + 200;
+            updates.vip = true;
+            updates.vip_type = 'gold';
+            rewardDescription = 'All Rewards (Gold, Gems & VIP Pass)';
+            break;
+        }
       }
 
       // Update user profile with rewards

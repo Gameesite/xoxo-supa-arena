@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { Ban, Trash2, Gift, Cpu, Medal } from 'lucide-react';
+import { Profile } from '@/types/supabase';
 
 interface User {
   id: string;

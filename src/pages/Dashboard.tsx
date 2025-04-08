@@ -32,7 +32,16 @@ const Dashboard = () => {
           .single();
 
         if (error) throw error;
-        setStats(data);
+        
+        if (data) {
+          setStats({
+            username: data.username || '',
+            points: data.points || 0,
+            games_played: data.games_played || 0,
+            games_won: data.games_won || 0,
+            rank: data.rank || 'Bronze'
+          });
+        }
       } catch (error) {
         console.error('Error fetching user stats:', error);
       } finally {
@@ -54,7 +63,16 @@ const Dashboard = () => {
           filter: `id=eq.${user?.id}` 
         }, 
         payload => {
-          setStats(payload.new as UserStats);
+          const newData = payload.new as any;
+          if (newData) {
+            setStats({
+              username: newData.username || '',
+              points: newData.points || 0,
+              games_played: newData.games_played || 0,
+              games_won: newData.games_won || 0,
+              rank: newData.rank || 'Bronze'
+            });
+          }
         }
       )
       .subscribe();

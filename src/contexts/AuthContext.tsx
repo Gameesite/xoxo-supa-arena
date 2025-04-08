@@ -12,6 +12,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
+  signInAnonymously: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -181,6 +182,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signInAnonymously = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithSSO({
+        provider: 'anonymous',
+      });
+
+      if (error) throw error;
+      
+      // Initialize user profile for anonymous user
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            username: `Guest_${Math.floor(Math.random() * 10000)}`,
+            points: 0,
+            games_won: 0,
+            games_played: 0,
+            rank: 'Bronze',
+          });
+
+        if (profileError) {
+          console.error('Error creating profile for anonymous user:', profileError);
+        }
+      }
+      
+      toast({
+        title: 'Welcome!',
+        description: 'You are now signed in as a guest.',
+      });
+      
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        title: 'Anonymous login failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+      console.error('Error signing in anonymously:', error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const signOut = async () => {
     try {
       setIsLoading(true);
@@ -215,6 +261,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signIn,
         signInWithGoogle,
         signInWithFacebook,
+        signInAnonymously,
         signOut,
       }}
     >

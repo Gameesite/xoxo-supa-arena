@@ -6,20 +6,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogIn } from 'lucide-react';
+import { LogIn, UserX } from 'lucide-react';
 import SocialLoginButtons from '@/components/SocialLoginButtons';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signIn, isLoading } = useAuth();
+  const { signIn, signInAnonymously, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     await signIn(email, password);
     setIsSubmitting(false);
+  };
+
+  const handleAnonymousSignIn = async () => {
+    await signInAnonymously();
   };
 
   return (
@@ -85,6 +89,27 @@ const Login = () => {
           </form>
           
           <SocialLoginButtons isLoading={isLoading || isSubmitting} />
+          
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or
+              </span>
+            </div>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={handleAnonymousSignIn}
+            disabled={isLoading}
+          >
+            <UserX className="mr-2 h-4 w-4" />
+            Continue as Guest
+          </Button>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">

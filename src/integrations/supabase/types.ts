@@ -9,6 +9,126 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      game_results: {
+        Row: {
+          created_at: string | null
+          game_type: string | null
+          id: string
+          result: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          game_type?: string | null
+          id?: string
+          result?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          game_type?: string | null
+          id?: string
+          result?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      gifts: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          gift_type: string
+          id: string
+          sent_by: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          gift_type: string
+          id?: string
+          sent_by?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          gift_type?: string
+          id?: string
+          sent_by?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          ban_end_date: string | null
+          ban_type: string | null
+          gems: number | null
+          id: string
+          is_banned: boolean | null
+          is_hacker: boolean | null
+          points: number | null
+          username: string | null
+        }
+        Insert: {
+          ban_end_date?: string | null
+          ban_type?: string | null
+          gems?: number | null
+          id: string
+          is_banned?: boolean | null
+          is_hacker?: boolean | null
+          points?: number | null
+          username?: string | null
+        }
+        Update: {
+          ban_end_date?: string | null
+          ban_type?: string | null
+          gems?: number | null
+          id?: string
+          is_banned?: boolean | null
+          is_hacker?: boolean | null
+          points?: number | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      redeem_codes: {
+        Row: {
+          all_rewards: boolean | null
+          claimed_by: string[] | null
+          code: string
+          created_at: string | null
+          id: string
+          is_vip: boolean | null
+          reward_amount: number | null
+          type: string
+          vip_type: string | null
+        }
+        Insert: {
+          all_rewards?: boolean | null
+          claimed_by?: string[] | null
+          code: string
+          created_at?: string | null
+          id?: string
+          is_vip?: boolean | null
+          reward_amount?: number | null
+          type: string
+          vip_type?: string | null
+        }
+        Update: {
+          all_rewards?: boolean | null
+          claimed_by?: string[] | null
+          code?: string
+          created_at?: string | null
+          id?: string
+          is_vip?: boolean | null
+          reward_amount?: number | null
+          type?: string
+          vip_type?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string

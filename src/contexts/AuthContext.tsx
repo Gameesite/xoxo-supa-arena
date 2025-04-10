@@ -1,9 +1,10 @@
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
+import { authService } from '@/services/authService';
+import { useAuthState } from '@/hooks/useAuthState';
 
 interface AuthContextType {
   user: User | null;
@@ -21,64 +22,23 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, session, isLoading, setIsLoading } = useAuthState();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Check active session
-    const getSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Error getting session:', error.message);
-      }
-      
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setIsLoading(false);
-    };
-    
-    getSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsLoading(false);
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   const signUp = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      const { data, error } = await authService.signUp(email, password);
 
       if (error) throw error;
 
       // Initialize user data in database
       if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            username: email.split('@')[0],
-            points: 0,
-            games_won: 0,
-            games_played: 0,
-            rank: 'Bronze',
-          });
+        const { error: profileError } = await authService.createUserProfile(
+          data.user.id,
+          email.split('@')[0]
+        );
 
         if (profileError) {
           console.error('Error creating profile:', profileError);
@@ -111,10 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await authService.signIn(email, password);
 
       if (error) throw error;
       
@@ -139,12 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`
-        }
-      });
+      const { error } = await authService.signInWithOAuth('google');
 
       if (error) throw error;
       
@@ -163,12 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithFacebook = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`
-        }
-      });
+      const { error } = await authService.signInWithOAuth('facebook');
 
       if (error) throw error;
       
@@ -187,12 +134,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithGitHub = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`
-        }
-      });
+      const { error } = await authService.signInWithOAuth('github');
 
       if (error) throw error;
       
@@ -217,25 +159,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const email = `anonymous_${randomString}@example.com`;
       const password = randomString + Math.random().toString(36).substring(2, 15);
       
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      const { data, error } = await authService.signUp(email, password);
 
       if (error) throw error;
       
       // Initialize user profile for anonymous user
       if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            username: `Guest_${Math.floor(Math.random() * 10000)}`,
-            points: 0,
-            games_won: 0,
-            games_played: 0,
-            rank: 'Bronze',
-          });
+        const { error: profileError } = await authService.createUserProfile(
+          data.user.id,
+          `Guest_${Math.floor(Math.random() * 10000)}`
+        );
 
         if (profileError) {
           console.error('Error creating profile for anonymous user:', profileError);
@@ -263,7 +196,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
+      const { error } = await authService.signOut();
       if (error) throw error;
       
       toast({

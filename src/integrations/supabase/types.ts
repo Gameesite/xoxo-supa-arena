@@ -9,6 +9,102 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          description: string
+          icon: string
+          id: string
+          name: string
+          reward_amount: number
+          reward_type: string
+        }
+        Insert: {
+          description: string
+          icon: string
+          id?: string
+          name: string
+          reward_amount: number
+          reward_type: string
+        }
+        Update: {
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          reward_amount?: number
+          reward_type?: string
+        }
+        Relationships: []
+      }
+      friend_requests: {
+        Row: {
+          created_at: string
+          id: string
+          receiver_id: string
+          sender_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          receiver_id: string
+          sender_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          receiver_id?: string
+          sender_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      game_history: {
+        Row: {
+          board_size: number
+          bot_id: string | null
+          created_at: string
+          duration: number
+          game_type: string
+          id: string
+          is_draw: boolean | null
+          moves: Json
+          player1_id: string
+          player2_id: string | null
+          winner_id: string | null
+        }
+        Insert: {
+          board_size: number
+          bot_id?: string | null
+          created_at?: string
+          duration: number
+          game_type: string
+          id?: string
+          is_draw?: boolean | null
+          moves: Json
+          player1_id: string
+          player2_id?: string | null
+          winner_id?: string | null
+        }
+        Update: {
+          board_size?: number
+          bot_id?: string | null
+          created_at?: string
+          duration?: number
+          game_type?: string
+          id?: string
+          is_draw?: boolean | null
+          moves?: Json
+          player1_id?: string
+          player2_id?: string | null
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       game_results: {
         Row: {
           created_at: string | null
@@ -62,34 +158,64 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           ban_end_date: string | null
           ban_type: string | null
+          blue_gems: number
+          friends: string[]
           gems: number | null
+          gold_coins: number
           id: string
           is_banned: boolean | null
           is_hacker: boolean | null
+          level: number
           points: number | null
+          red_gems: number
+          unlocked_boards: string[]
+          unlocked_bots: string[]
+          unlocked_markers: string[]
           username: string | null
+          xp: number
         }
         Insert: {
+          avatar_url?: string | null
           ban_end_date?: string | null
           ban_type?: string | null
+          blue_gems?: number
+          friends?: string[]
           gems?: number | null
+          gold_coins?: number
           id: string
           is_banned?: boolean | null
           is_hacker?: boolean | null
+          level?: number
           points?: number | null
+          red_gems?: number
+          unlocked_boards?: string[]
+          unlocked_bots?: string[]
+          unlocked_markers?: string[]
           username?: string | null
+          xp?: number
         }
         Update: {
+          avatar_url?: string | null
           ban_end_date?: string | null
           ban_type?: string | null
+          blue_gems?: number
+          friends?: string[]
           gems?: number | null
+          gold_coins?: number
           id?: string
           is_banned?: boolean | null
           is_hacker?: boolean | null
+          level?: number
           points?: number | null
+          red_gems?: number
+          unlocked_boards?: string[]
+          unlocked_bots?: string[]
+          unlocked_markers?: string[]
           username?: string | null
+          xp?: number
         }
         Relationships: []
       }
@@ -128,6 +254,68 @@ export type Database = {
           vip_type?: string | null
         }
         Relationships: []
+      }
+      shop_items: {
+        Row: {
+          description: string
+          id: string
+          image_url: string | null
+          item_id: string
+          name: string
+          price_blue_gems: number | null
+          price_gold: number | null
+          price_red_gems: number | null
+          type: string
+        }
+        Insert: {
+          description: string
+          id?: string
+          image_url?: string | null
+          item_id: string
+          name: string
+          price_blue_gems?: number | null
+          price_gold?: number | null
+          price_red_gems?: number | null
+          type: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          image_url?: string | null
+          item_id?: string
+          name?: string
+          price_blue_gems?: number | null
+          price_gold?: number | null
+          price_red_gems?: number | null
+          type?: string
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
